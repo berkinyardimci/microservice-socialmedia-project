@@ -30,6 +30,10 @@ public class AuthController {
     public ResponseEntity<RegisterResponseDto> register(@RequestBody @Valid RegisterRequestDto dto) {
         return ResponseEntity.ok(authService.register(dto));
     }
+    @PostMapping(REGISTER+"2")
+    public ResponseEntity<RegisterResponseDto> register2(@RequestBody @Valid RegisterRequestDto dto) {
+        return ResponseEntity.ok(authService.registerWithRabbitMq(dto));
+    }
 
     @PostMapping(LOGIN)
     public ResponseEntity<?> login(@RequestBody LoginRequestDto dto) {
@@ -70,5 +74,10 @@ public class AuthController {
     @DeleteMapping(DELETEBYID)
     public ResponseEntity<Boolean> delete(Long id){
         return ResponseEntity.ok(authService.delete(id));
+    }
+
+    @GetMapping(FINDBYROLE)
+    public ResponseEntity<List<Long>> findByRole(@RequestParam String role){
+        return ResponseEntity.ok(authService.findByRole(role));
     }
 }

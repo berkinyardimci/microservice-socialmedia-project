@@ -3,6 +3,7 @@ package com.socialmedia.mapper;
 import com.socialmedia.dto.request.NewCreateUserRequestDto;
 import com.socialmedia.dto.request.UpdateEmailOrUsernameRequestDto;
 import com.socialmedia.dto.request.UserProfileUpdateRequestDto;
+import com.socialmedia.rabbitmq.model.RegisterModel;
 import com.socialmedia.repository.entity.UserProfile;
 import org.mapstruct.Mapper;
 import org.mapstruct.ReportingPolicy;
@@ -16,4 +17,6 @@ public interface IUserMapper {
     UserProfile toUserProfile(final NewCreateUserRequestDto dto);
 
     UpdateEmailOrUsernameRequestDto toUpdateEmailOrUsernameRequestDto(final UserProfileUpdateRequestDto dto);
+    UserProfile toUserProfile(final RegisterModel model);
+
 }

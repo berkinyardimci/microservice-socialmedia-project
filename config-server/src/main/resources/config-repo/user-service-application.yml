@@ -2,6 +2,11 @@ server:
   port: 7070
 
 spring:
+  zipkin:
+    enable: true
+    enable-url: http://localhost:9411
+    service:
+      name: user-service
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
@@ -10,8 +15,18 @@ spring:
   jpa:
     hibernate:
       ddl-auto: update
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: socialmedia
+    password: 123
 
 jwt:
   secretKey: my-secret-key
   audience: socialmedia
   issuer: berkin
+
+rabbitmq:
+  exchange-auth: auth-exchange
+  registerkey: register-key
+  queueRegister: register-queue

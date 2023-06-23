@@ -9,37 +9,63 @@ import com.socialmedia.exception.AuthManagerException;
 import com.socialmedia.exception.ErrorType;
 import com.socialmedia.manager.IUserManager;
 import com.socialmedia.mapper.IAuthMapper;
+import com.socialmedia.rabbitmq.producer.RegisterProducer;
 import com.socialmedia.repository.IAuthRepository;
 import com.socialmedia.repository.entity.Auth;
+import com.socialmedia.repository.enums.ERole;
 import com.socialmedia.repository.enums.EStatus;
 import com.socialmedia.utility.CodeGenerator;
 import com.socialmedia.utility.JwtTokenManager;
 import com.socialmedia.utility.ServiceManager;
+import org.springframework.cache.CacheManager;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class AuthService extends ServiceManager<Auth, Long> {
     private final IAuthRepository authRepository;
     private final IUserManager userManager;
     private final JwtTokenManager jwtTokenManager;
+    private final CacheManager cacheManager;
+    private final RegisterProducer registerProducer;
 
-    public AuthService(IAuthRepository authRepository, IUserManager userManager, JwtTokenManager jwtTokenManager) {
+    public AuthService(IAuthRepository authRepository, IUserManager userManager, JwtTokenManager jwtTokenManager, CacheManager cacheManager, RegisterProducer registerProducer) {
         super(authRepository);
         this.authRepository = authRepository;
         this.userManager = userManager;
         this.jwtTokenManager = jwtTokenManager;
+        this.cacheManager = cacheManager;
+        this.registerProducer = registerProducer;
     }
 
     @Transactional
     public RegisterResponseDto register(RegisterRequestDto dto) {
         Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
         auth.setActivationCode(CodeGenerator.genarateCode());
-        save(auth);
+
         try {
+            save(auth);
             userManager.createUser(IAuthMapper.INSTANCE.toNewCreateUserRequestDto(auth));
+            cacheManager.getCache("findbyrole").evict(auth.getRole().toString().toUpperCase());
+        }catch (Exception e){
+            throw new AuthManagerException(ErrorType.USER_NOT_CREATED);
+        }
+        RegisterResponseDto registerResponseDto = IAuthMapper.INSTANCE.toRegisterResponseDto(auth);
+        return registerResponseDto;
+    }
+    @Transactional
+    public RegisterResponseDto registerWithRabbitMq(RegisterRequestDto dto) {
+        Auth auth = IAuthMapper.INSTANCE.toAuth(dto);
+        auth.setActivationCode(CodeGenerator.genarateCode());
+        try {
+            save(auth);
+            registerProducer.sendNewUser(IAuthMapper.INSTANCE.toRegisterModel(auth));
+            cacheManager.getCache("findbyrole").evict(auth.getRole().toString().toUpperCase());
         }catch (Exception e){
             throw new AuthManagerException(ErrorType.USER_NOT_CREATED);
         }
@@ -95,5 +121,14 @@ public class AuthService extends ServiceManager<Auth, Long> {
         update(auth.get());
         userManager.delete(id);
         return true;
+    }
+    public List<Long> findByRole(String role) {
+        ERole myrole;
+        try {
+            myrole=ERole.valueOf(role.toUpperCase(Locale.ENGLISH));
+        }catch (Exception e){
+            throw  new AuthManagerException(ErrorType.ROLE_NOT_FOUND);
+        }
+        return  authRepository.findAllByRole(myrole).stream().map(x->x.getId()).collect(Collectors.toList());
     }
 }

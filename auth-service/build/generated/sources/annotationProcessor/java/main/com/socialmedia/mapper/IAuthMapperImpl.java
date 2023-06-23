@@ -3,13 +3,14 @@ package com.socialmedia.mapper;
 import com.socialmedia.dto.request.NewCreateUserRequestDto;
 import com.socialmedia.dto.request.RegisterRequestDto;
 import com.socialmedia.dto.response.RegisterResponseDto;
+import com.socialmedia.rabbitmq.model.RegisterModel;
 import com.socialmedia.repository.entity.Auth;
 import javax.annotation.processing.Generated;
 import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-06-21T00:10:31+0300",
+    date = "2023-06-23T04:56:43+0300",
     comments = "version: 1.5.3.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-7.5.1.jar, environment: Java 17.0.4.1 (Oracle Corporation)"
 )
 @Component
@@ -58,5 +59,20 @@ public class IAuthMapperImpl implements IAuthMapper {
         newCreateUserRequestDto.email( auth.getEmail() );
 
         return newCreateUserRequestDto.build();
+    }
+
+    @Override
+    public RegisterModel toRegisterModel(Auth auth) {
+        if ( auth == null ) {
+            return null;
+        }
+
+        RegisterModel.RegisterModelBuilder registerModel = RegisterModel.builder();
+
+        registerModel.authId( auth.getId() );
+        registerModel.username( auth.getUsername() );
+        registerModel.email( auth.getEmail() );
+
+        return registerModel.build();
     }
 }
