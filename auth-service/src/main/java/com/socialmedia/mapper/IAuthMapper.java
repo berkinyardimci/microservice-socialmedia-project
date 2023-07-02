@@ -3,6 +3,7 @@ package com.socialmedia.mapper;
 import com.socialmedia.dto.request.NewCreateUserRequestDto;
 import com.socialmedia.dto.request.RegisterRequestDto;
 import com.socialmedia.dto.response.RegisterResponseDto;
+import com.socialmedia.rabbitmq.model.RegisterMailModel;
 import com.socialmedia.rabbitmq.model.RegisterModel;
 import com.socialmedia.repository.entity.Auth;
 import org.mapstruct.Mapper;
@@ -21,4 +22,6 @@ public interface IAuthMapper {
 
     @Mapping(source = "id",target = "authId")
     RegisterModel toRegisterModel(final Auth auth);
+
+    RegisterMailModel toRegisterMailModel(final Auth auth);
 }

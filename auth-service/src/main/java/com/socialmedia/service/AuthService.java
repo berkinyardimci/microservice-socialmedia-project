@@ -9,6 +9,7 @@ import com.socialmedia.exception.AuthManagerException;
 import com.socialmedia.exception.ErrorType;
 import com.socialmedia.manager.IUserManager;
 import com.socialmedia.mapper.IAuthMapper;
+import com.socialmedia.rabbitmq.producer.RegisterMailProducer;
 import com.socialmedia.rabbitmq.producer.RegisterProducer;
 import com.socialmedia.repository.IAuthRepository;
 import com.socialmedia.repository.entity.Auth;
@@ -33,14 +34,16 @@ public class AuthService extends ServiceManager<Auth, Long> {
     private final JwtTokenManager jwtTokenManager;
     private final CacheManager cacheManager;
     private final RegisterProducer registerProducer;
+    private final RegisterMailProducer mailProducer;
 
-    public AuthService(IAuthRepository authRepository, IUserManager userManager, JwtTokenManager jwtTokenManager, CacheManager cacheManager, RegisterProducer registerProducer) {
+    public AuthService(IAuthRepository authRepository, IUserManager userManager, JwtTokenManager jwtTokenManager, CacheManager cacheManager, RegisterProducer registerProducer, RegisterMailProducer mailProducer) {
         super(authRepository);
         this.authRepository = authRepository;
         this.userManager = userManager;
         this.jwtTokenManager = jwtTokenManager;
         this.cacheManager = cacheManager;
         this.registerProducer = registerProducer;
+        this.mailProducer = mailProducer;
     }
 
     @Transactional
@@ -65,6 +68,7 @@ public class AuthService extends ServiceManager<Auth, Long> {
         try {
             save(auth);
             registerProducer.sendNewUser(IAuthMapper.INSTANCE.toRegisterModel(auth));
+            mailProducer.sendActivationCode(IAuthMapper.INSTANCE.toRegisterMailModel(auth));
             cacheManager.getCache("findbyrole").evict(auth.getRole().toString().toUpperCase());
         }catch (Exception e){
             throw new AuthManagerException(ErrorType.USER_NOT_CREATED);

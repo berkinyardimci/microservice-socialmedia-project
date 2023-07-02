@@ -15,6 +15,7 @@ public class MailServiceApplication {
         SpringApplication.run(MailServiceApplication.class);
     }
 
+    /*
     private final JavaMailSender javaMailSender;
 
     public MailServiceApplication(JavaMailSender javaMailSender) {
@@ -31,5 +32,7 @@ public class MailServiceApplication {
         System.out.println("xxxxxx------");
         javaMailSender.send(mailMessage);
     }
+
+     */
 
 }
