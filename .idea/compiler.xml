@@ -9,11 +9,12 @@
           <entry name="$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.mapstruct/mapstruct-processor/1.5.3.Final/dce418bedafd71ff8dd2cef15006c0fee788b073/mapstruct-processor-1.5.3.Final.jar" />
         </processorPath>
         <module name="SocialMedia.config-server-git.main" />
-        <module name="SocialMedia.user-service.main" />
-        <module name="SocialMedia.config-server.main" />
-        <module name="SocialMedia.api-gateway-service.main" />
         <module name="SocialMedia.auth-service.main" />
         <module name="SocialMedia.main" />
+        <module name="SocialMedia.user-service.main" />
+        <module name="SocialMedia.config-server.main" />
+        <module name="SocialMedia.email-service.main" />
+        <module name="SocialMedia.api-gateway-service.main" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel target="17" />

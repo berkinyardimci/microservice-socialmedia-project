@@ -1,0 +1,16 @@
+server:
+  port: 7075
+
+spring:
+  mail:
+    username: berkinyardimci98@gmail.com
+    password: wfyelqolptdwfckw
+    host: smtp.gmail.com
+    port: 587
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: ture
+            required: true
