@@ -3,6 +3,7 @@ package com.socialmedia.mapper;
 import com.socialmedia.dto.request.NewCreateUserRequestDto;
 import com.socialmedia.dto.request.UpdateEmailOrUsernameRequestDto;
 import com.socialmedia.dto.request.UserProfileUpdateRequestDto;
+import com.socialmedia.rabbitmq.model.RegisterElasticModel;
 import com.socialmedia.rabbitmq.model.RegisterModel;
 import com.socialmedia.repository.entity.UserProfile;
 import javax.annotation.processing.Generated;
@@ -10,7 +11,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2023-07-04T00:52:29+0300",
+    date = "2023-07-04T02:26:22+0300",
     comments = "version: 1.5.3.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-7.5.1.jar, environment: Java 17.0.4.1 (Oracle Corporation)"
 )
 @Component
@@ -58,5 +59,21 @@ public class IUserMapperImpl implements IUserMapper {
         userProfile.email( model.getEmail() );
 
         return userProfile.build();
+    }
+
+    @Override
+    public RegisterElasticModel toRegisterElasticModel(UserProfile userProfile) {
+        if ( userProfile == null ) {
+            return null;
+        }
+
+        RegisterElasticModel.RegisterElasticModelBuilder registerElasticModel = RegisterElasticModel.builder();
+
+        registerElasticModel.id( userProfile.getId() );
+        registerElasticModel.authId( userProfile.getAuthId() );
+        registerElasticModel.username( userProfile.getUsername() );
+        registerElasticModel.email( userProfile.getEmail() );
+
+        return registerElasticModel.build();
     }
 }

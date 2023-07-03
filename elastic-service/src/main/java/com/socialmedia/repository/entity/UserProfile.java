@@ -8,15 +8,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
-
+import org.springframework.data.elasticsearch.annotations.Document;
 
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
 @SuperBuilder
-@Document
+@Document(indexName = "user_profile")
 public class UserProfile extends BaseEntity{
 
     @Id

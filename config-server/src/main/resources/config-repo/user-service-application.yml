@@ -26,6 +26,7 @@ jwt:
   issuer: berkin
 
 rabbitmq:
-  exchange-auth: auth-exchange
-  registerkey: register-key
+  exchange-user: user-exchange
+  elasticregisterkey: elastic-register-key
+  queueregisterelastic: elastic-register-queue
   queueRegister: register-queue

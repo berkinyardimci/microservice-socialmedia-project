@@ -8,6 +8,7 @@ import com.socialmedia.exception.UserManagerException;
 import com.socialmedia.manager.IAuthManager;
 import com.socialmedia.mapper.IUserMapper;
 import com.socialmedia.rabbitmq.model.RegisterModel;
+import com.socialmedia.rabbitmq.producer.RegisterProducer;
 import com.socialmedia.repository.IUserProfileRepository;
 import com.socialmedia.repository.entity.UserProfile;
 import com.socialmedia.repository.enums.EStatus;
@@ -28,13 +29,15 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
     private final JwtTokenManager jwtTokenManager;
     private final IAuthManager authManager;
     private final CacheManager cacheManager;
+    private final RegisterProducer registerProducer;
 
-    public UserProfileService(IUserProfileRepository userProfileRepository, JwtTokenManager jwtTokenManager, IAuthManager authManager, CacheManager cacheManager) {
+    public UserProfileService(IUserProfileRepository userProfileRepository, JwtTokenManager jwtTokenManager, IAuthManager authManager, CacheManager cacheManager, RegisterProducer registerProducer) {
         super(userProfileRepository);
         this.userProfileRepository = userProfileRepository;
         this.jwtTokenManager = jwtTokenManager;
         this.authManager = authManager;
         this.cacheManager = cacheManager;
+        this.registerProducer = registerProducer;
     }
 
     public Boolean createUser(NewCreateUserRequestDto dto) {
@@ -47,7 +50,8 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
     }
     public Boolean createUserWithRabbitMq(RegisterModel model) {
         try {
-            save(IUserMapper.INSTANCE.toUserProfile(model));
+            UserProfile userProfile = save(IUserMapper.INSTANCE.toUserProfile(model));
+            registerProducer.sendNewUser(IUserMapper.INSTANCE.toRegisterElasticModel(userProfile));
             return true;
         } catch (Exception e) {
             throw new UserManagerException(ErrorType.USER_NOT_CREATED);

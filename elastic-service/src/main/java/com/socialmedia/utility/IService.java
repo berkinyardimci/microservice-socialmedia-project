@@ -9,6 +9,6 @@ public interface IService <T,ID>{
     T update(T t);
     void delete(T t);
     void deleteById(ID id);
-    List<T> findAll();
+    Iterable<T> findAll();
     Optional<T> findById(ID id);
 }
