@@ -1,5 +1,6 @@
 package com.socialmedia.service;
 
+import com.socialmedia.dto.request.ActivateStatusDto;
 import com.socialmedia.dto.request.NewCreateUserRequestDto;
 import com.socialmedia.dto.request.UpdateEmailOrUsernameRequestDto;
 import com.socialmedia.dto.request.UserProfileUpdateRequestDto;
@@ -48,6 +49,7 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
             throw new UserManagerException(ErrorType.USER_NOT_CREATED);
         }
     }
+
     public Boolean createUserWithRabbitMq(RegisterModel model) {
         try {
             UserProfile userProfile = save(IUserMapper.INSTANCE.toUserProfile(model));
@@ -58,8 +60,12 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
         }
     }
 
-    public Boolean activateStatus(Long authId) {
-        Optional<UserProfile> userProfile = userProfileRepository.findOptionalByAuthId(authId);
+    public Boolean activateStatus(String token) {
+        Optional<Long> authId = jwtTokenManager.getIdFromToken(token.substring(7));
+        if (authId.isEmpty()) {
+            throw new UserManagerException(ErrorType.INVALID_TOKEN);
+        }
+        Optional<UserProfile> userProfile = userProfileRepository.findOptionalByAuthId(authId.get());
         if (userProfile.isEmpty()) {
             throw new UserManagerException(ErrorType.USER_NOT_FOUND);
         }

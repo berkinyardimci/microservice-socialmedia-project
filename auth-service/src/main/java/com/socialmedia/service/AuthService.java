@@ -1,9 +1,6 @@
 package com.socialmedia.service;
 
-import com.socialmedia.dto.request.ActivateRequestDto;
-import com.socialmedia.dto.request.LoginRequestDto;
-import com.socialmedia.dto.request.RegisterRequestDto;
-import com.socialmedia.dto.request.UpdateEmailOrUsernameRequestDto;
+import com.socialmedia.dto.request.*;
 import com.socialmedia.dto.response.RegisterResponseDto;
 import com.socialmedia.exception.AuthManagerException;
 import com.socialmedia.exception.ErrorType;
@@ -97,7 +94,8 @@ public class AuthService extends ServiceManager<Auth, Long> {
         if (dto.getActivationCode().equals(auth.get().getActivationCode())){
             auth.get().setStatus(EStatus.ACTIVE);
             update(auth.get());
-            userManager.activateStatus(auth.get().getId());
+            String token = jwtTokenManager.createToken(auth.get().getId(),auth.get().getRole()).get();
+            userManager.activateStatus("Bearer "+token);
             return true;
         }else {
             throw new AuthManagerException(ErrorType.ACTIVATE_CODE_ERROR);

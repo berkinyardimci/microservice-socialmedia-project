@@ -1,5 +1,6 @@
 package com.socialmedia.manager;
 
+import com.socialmedia.dto.request.ActivateStatusDto;
 import com.socialmedia.dto.request.NewCreateUserRequestDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +17,8 @@ public interface IUserManager {
     @PostMapping("/create")
     public ResponseEntity<Boolean> createUser(@RequestBody NewCreateUserRequestDto dto);
 
-    @GetMapping(ACTIVATESTATUS+"/{authId}")
-    public ResponseEntity<Boolean> activateStatus(@PathVariable Long authId);
+    @PostMapping(ACTIVATESTATUS)
+    public ResponseEntity<Boolean> activateStatus(@RequestHeader(value = "Authorization") String token);
 
     @DeleteMapping(DELETEBYID)
     public ResponseEntity<Boolean> delete(@RequestParam Long authId);
