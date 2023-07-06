@@ -89,7 +89,7 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
             userProfile.get().setEmail(dto.getEmail());
             UpdateEmailOrUsernameRequestDto updateEmailOrUsernameRequestDto = IUserMapper.INSTANCE.toUpdateEmailOrUsernameRequestDto(dto);
             updateEmailOrUsernameRequestDto.setAuthId(authId.get());
-            authManager.updateEmailOrUsername(updateEmailOrUsernameRequestDto);
+            authManager.updateEmailOrUsername("Bearer " + dto.getToken(), updateEmailOrUsernameRequestDto);
         }
         userProfile.get().setPhone(dto.getPhone());
         userProfile.get().setAvatar(dto.getAvatar());
@@ -124,14 +124,14 @@ public class UserProfileService extends ServiceManager<UserProfile, String> {
     }
 
     @Cacheable(value = "findbyrole", key = "#role.toUpperCase()")
-    public List<UserProfile> findByRole(String role) {
+    public List<UserProfile> findByRole(String role, String token) {
         try {
             Thread.sleep(1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
         //ResponseBody döndüğü için getbody olarak aldık
-        List<Long> authIds = authManager.findByRole(role).getBody();
+        List<Long> authIds = authManager.findByRole(token, role).getBody();
 
         return authIds.stream().map(x -> userProfileRepository.findOptionalByAuthId(x)
                         .orElseThrow(() -> {

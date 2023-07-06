@@ -13,8 +13,8 @@ import static com.socialmedia.constant.ApiUrls.FINDBYROLE;
 public interface IAuthManager {
 
     @PutMapping("/updateemailorusername")
-    public ResponseEntity<Boolean> updateEmailOrUsername(@RequestBody UpdateEmailOrUsernameRequestDto dto);
+    public ResponseEntity<Boolean> updateEmailOrUsername(@RequestHeader(value = "Authorization")String token,@RequestBody UpdateEmailOrUsernameRequestDto dto);
 
     @GetMapping(FINDBYROLE)
-    public ResponseEntity<List<Long>> findByRole(@RequestParam String role);
+    public ResponseEntity<List<Long>> findByRole(@RequestHeader(value = "Authorization")String token,@RequestParam String role);
 }
