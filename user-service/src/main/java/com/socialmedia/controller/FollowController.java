@@ -22,4 +22,9 @@ public class FollowController {
     public ResponseEntity<?> createFollow(@RequestBody CreateFollowRequestDto dto){
         return ResponseEntity.ok(followService.createFollow(dto));
     }
+
+    @GetMapping(FINDALL)
+    public  ResponseEntity<List<Follow>> findAll(){
+        return  ResponseEntity.ok(followService.findAll());
+    }
 }
